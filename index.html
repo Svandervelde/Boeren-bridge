@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1C6A50">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Boerenbridge">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Boerenbridge Scoreblok</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#ECF1EE; --paper:#FFFFFF; --sub:#F3F6F4; --ink:#15201B; --muted:#5E6B64;
+  --line:#D8E0DB; --line-strong:#B3C0B8; --accent:#1C6A50; --accent-ink:#FFFFFF;
+  --accent-soft:#DDEEE6; --neg:#B8322A; --neg-soft:#F8E4E2; --warn:#A5610F; --warn-soft:#FBEFD9;
+  --shadow:0 10px 30px rgba(16,26,21,.18);
+  --display:"Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0E1411; --paper:#161E1A; --sub:#1B2520; --ink:#E6EDE9; --muted:#95A49C;
+    --line:#26322C; --line-strong:#3B4A42; --accent:#4FBF93; --accent-ink:#08170F;
+    --accent-soft:#183328; --neg:#F07268; --neg-soft:#3A1D1B; --warn:#E6A553; --warn-soft:#352812;
+    --shadow:0 10px 30px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0E1411; --paper:#161E1A; --sub:#1B2520; --ink:#E6EDE9; --muted:#95A49C;
+  --line:#26322C; --line-strong:#3B4A42; --accent:#4FBF93; --accent-ink:#08170F;
+  --accent-soft:#183328; --neg:#F07268; --neg-soft:#3A1D1B; --warn:#E6A553; --warn-soft:#352812;
+  --shadow:0 10px 30px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;min-height:100vh}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);font-variant-numeric:tabular-nums}
+.page{max-width:960px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px}
+h1{font:700 clamp(26px,6vw,36px)/1 var(--display);letter-spacing:-.02em;margin:0;display:flex;align-items:center;gap:10px}
+.logo{display:inline-grid;grid-template-columns:1fr 1fr;width:1.2em;height:1.2em;flex:none;background:#fff;border-radius:.22em;border:1px solid var(--line);font-size:.95em;line-height:1;place-items:center;padding:.08em;color:#15201B}
+.logo span{font-size:.5em;line-height:1}
+.logo .r{color:#C82626}
+.sub{color:var(--muted);margin:4px 0 0;font-size:15px}
+.tools{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{border:1px solid var(--line-strong);background:var(--paper);border-radius:10px;padding:8px 12px;font-weight:700;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{border-color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:default;border-color:var(--line-strong)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.big{padding:12px 16px;font-size:16px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.banner{background:var(--warn-soft);border-radius:10px;padding:10px 14px;font-size:14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.banner button{background:none;border:0;padding:0;color:var(--warn);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px}
+/* ronde-paneel */
+.round{padding:16px;display:flex;flex-direction:column;gap:14px;border:2px solid var(--accent)}
+.rhead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}
+.rhead h2{margin:0;font:700 22px var(--display)}
+.rhead h2 span{color:var(--muted);font-weight:600;font-size:16px;margin-left:6px}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:700;background:var(--sub);color:var(--ink)}
+.chip.acc{background:var(--accent-soft);color:var(--accent)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.neg{background:var(--neg-soft);color:var(--neg)}
+.stage{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0}
+.plist{display:flex;flex-direction:column}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.prow .who{display:flex;flex-direction:column;min-width:0}
+.prow .who b{font:700 17px var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .who small{color:var(--muted);font-size:13px}
+.dealer{display:inline-block;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-left:6px}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line-strong);background:var(--paper);font:700 22px var(--display);display:flex;align-items:center;justify-content:center}
+.step button:hover{border-color:var(--ink)}
+.step button:disabled{opacity:.35;cursor:default}
+.step output{min-width:44px;text-align:center;font:700 26px var(--display)}
+.step output.unset{color:var(--line-strong)}
+.pts{font-weight:700;font-size:14px}
+.pts.pos{color:var(--accent)} .pts.neg{color:var(--neg)}
+.ractions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.linkbtn{background:none;border:0;padding:2px 0;color:var(--muted);font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.linkbtn:hover{color:var(--accent)}
+.linkbtn.armed{color:var(--neg);font-weight:700}
+.done{padding:16px;display:flex;flex-direction:column;gap:10px}
+.winner{background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:12px 14px;font-weight:700;font-size:17px}
+
+/* scoreblad */
+.scroll{overflow-x:auto}
+.sheet-card{overflow:hidden}
+table.score{border-collapse:separate;border-spacing:0;width:100%;min-width:max-content}
+.score th,.score td{border-bottom:1px solid var(--line);text-align:center;padding:0}
+.score thead th{border-bottom:2px solid var(--line-strong);padding:10px 8px;font:700 15px var(--display);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.score .rc{position:sticky;left:0;z-index:1;background:var(--paper);text-align:left;padding:6px 12px;border-right:1px solid var(--line);min-width:96px;white-space:nowrap}
+.score thead .rc{z-index:2;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rc b{font:700 15px var(--display)}
+.rc small{display:block;color:var(--muted);font-size:12px}
+.score td{min-width:72px;height:52px}
+.cellbtn{width:100%;height:100%;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px}
+.cellbtn:hover{background:var(--sub)}
+.cellbtn .tot{font:700 17px var(--display)}
+.cellbtn .det{font-size:12px;color:var(--muted)}
+.cellbtn .det .pos{color:var(--accent);font-weight:700} .cellbtn .det .neg{color:var(--neg);font-weight:700}
+tr.future td,tr.future .rc{color:var(--line-strong)}
+tr.future .rc small{color:var(--line-strong)}
+tr.now .rc,tr.now td{background:var(--accent-soft)}
+tr.now td .tot,tr.now td .det{color:var(--accent)}
+tr.peak .rc b::after{content:" · top";font:700 11px var(--body);color:var(--muted);letter-spacing:.04em}
+
+.standings{padding:16px;display:flex;flex-direction:column;gap:10px}
+.standings h2,.hist h2{font:700 20px var(--display);margin:0}
+.row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center}
+.rank{font:700 16px var(--display);color:var(--muted);text-align:center}
+.row.first .rank{color:var(--accent)}
+.bar{height:8px;border-radius:4px;background:var(--line);margin-top:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ink);border-radius:4px}
+.row.first .bar i{background:var(--accent)}
+.row .nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .nm small{font-weight:400;color:var(--muted);margin-left:6px}
+.row .score-n{font:700 20px var(--display);min-width:48px;text-align:right}
+.rules{color:var(--muted);font-size:14px;margin:0;max-width:65ch}
+
+.hist{padding:16px;display:flex;flex-direction:column;gap:16px}
+.hist-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.hist h3{font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.note{color:var(--muted);font-size:14px;margin:0}
+.stats{border-collapse:separate;border-spacing:0;width:100%}
+.stats th,.stats td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.stats th:first-child,.stats td:first-child{text-align:left;padding-left:0}
+.stats thead th{font-size:12px;color:var(--muted);font-weight:700;border-bottom:2px solid var(--line-strong)}
+.stats td:first-child{font-weight:700}
+.games{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
+.game{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.game:last-child{border-bottom:0}
+.game .when{font-size:13px;color:var(--muted)}
+.game .when em{font-style:normal;color:var(--warn);margin-left:6px}
+.game .res{display:flex;flex-wrap:wrap;gap:4px 14px;grid-column:1/-1;font-size:15px}
+.game .res .win b{color:var(--accent)}
+
+/* sheet */
+.overlay{position:fixed;inset:0;background:rgba(8,14,11,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--paper);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom,0px));box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;max-height:90vh;overflow:auto;animation:up .18s ease-out}
+@media (min-width:600px){.overlay{align-items:center}.sheet{border-radius:18px}}
+@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sheet h3{margin:0;font:700 21px var(--display)}
+.sheet p{margin:0;color:var(--muted);font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+.actions .right{display:flex;gap:8px;margin-left:auto}
+.field{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px}
+input[type=text],select{font:inherit;font-size:17px;padding:9px 12px;border-radius:10px;border:1px solid var(--line-strong);background:var(--sub);color:var(--ink);min-width:0}
+.names{display:flex;flex-direction:column;gap:8px}
+.nrow{display:grid;grid-template-columns:24px minmax(0,1fr) 44px;gap:8px;align-items:center}
+.nrow span{color:var(--muted);font-weight:700;text-align:center}
+.nrow button{height:44px;border-radius:10px;border:1px solid var(--line-strong);background:var(--paper);font-size:18px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.edit-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px 12px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.edit-row b{font:700 16px var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.edit-head{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.edit-head span:not(:first-child){width:146px;text-align:center}
+.step.sm button{width:38px;height:38px;font-size:19px}
+.step.sm output{min-width:34px;font-size:21px}
+.err{color:var(--neg);font-size:14px;font-weight:700;margin:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div>
+      <h1><span class="logo" aria-hidden="true"><span>♠</span><span class="r">♥</span><span class="r">♦</span><span>♣</span></span>Boerenbridge</h1>
+      <p class="sub">Voorspel, speel, vul de slagen in. De punten rekenen vanzelf. Voor 3 tot 8 spelers.</p>
+    </div>
+    <div class="tools">
+      <button class="btn" id="undo" type="button">↶ Ongedaan</button>
+      <button class="btn primary" id="new" type="button">Nieuw spel</button>
+    </div>
+  </header>
+
+  <div class="banner" id="banner" hidden>
+    <span>Dit is een voorbeeldspel met verzonnen scores.</span>
+    <button type="button" id="banner-new">Start een eigen spel</button>
+  </div>
+
+  <section class="card round" id="round" aria-live="polite"></section>
+
+  <div class="card sheet-card"><div class="scroll"><table class="score" id="score"></table></div></div>
+
+  <div class="card standings" id="standings"></div>
+
+  <p class="rules">Puntentelling: voorspelling goed is 10 punten plus 1 per slag. Voorspelling fout is min 1 punt per slag verschil. Rondes gaan omhoog langs de oneven aantallen (1, 3, 5 … tot het maximum) en weer omlaag langs de even aantallen (bij 17 kaarten: 16, 14 … tot 2). Iedereen voorspelt tegelijk; de app laat zien of het totaal te laag, precies of te hoog is. Tik op een gespeelde ronde in het scoreblad om die te verbeteren. Het lopende spel en het overzicht hieronder worden op dit apparaat bewaard. Een uitgespeeld spel komt automatisch in het overzicht.</p>
+
+  <section class="card hist" id="hist" aria-labelledby="hist-title"></section>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+</div>
+
+<script>
+(function(){
+const KEY='boerenbridge-v1', HKEY='boerenbridge-historie-v1';
+const $=id=>document.getElementById(id);
+function el(tag,attrs,...kids){const e=document.createElement(tag); if(attrs) for(const [k,v] of Object.entries(attrs)){ if(k==='class') e.className=v; else if(k.startsWith('on')) e.addEventListener(k.slice(2),v); else if(v!==false&&v!=null) e.setAttribute(k,v===true?'':v);} for(const c of kids.flat()){ if(c==null||c===false) continue; e.append(c.nodeType?c:document.createTextNode(c)); } return e;}
+
+/* ---------- regels ---------- */
+const maxAllowed=n=>{let m=Math.floor(52/n); if(m%2===0) m--; return Math.max(1,m);};
+const seq=max=>{const r=[]; for(let c=1;c<=max;c+=2) r.push(c); for(let c=max-1;c>=2;c-=2) r.push(c); return r;};
+const points=(b,t)=>b===t?10+t:-Math.abs(b-t);
+const sum=a=>a.reduce((x,y)=>x+(y||0),0);
+
+/* ---------- state ---------- */
+const gid=()=>'g'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+function newGame(names,max,first){const n=names.length; return {example:false,gameId:gid(),players:names.map(x=>({name:x})),maxCards:max,firstDealer:first||0,rounds:[],cur:{stage:'bid',bids:Array(n).fill(0),tricks:Array(n).fill(null)}};}
+function example(){
+  const g=newGame(['Anna','Bram','Sanne','Joost'],13,0); g.example=true; g.gameId=null;
+  const data=[[1,[0,1,0,0],[0,1,0,0]],[3,[1,1,0,1],[1,2,0,0]],[5,[2,1,1,2],[2,1,0,2]],[7,[2,3,1,2],[1,3,1,2]],[9,[3,2,2,3],[3,2,1,3]]];
+  data.forEach(([c,b,t])=>g.rounds.push({cards:c,bids:b,tricks:t}));
+  g.cur={stage:'bid',bids:[3,4,2,0],tricks:[null,null,null,null]};
+  return g;
+}
+let state, hist=[];
+try{const raw=localStorage.getItem(KEY); if(raw){const d=JSON.parse(raw); if(d&&Array.isArray(d.players)&&d.players.length) state=d;}}catch(e){}
+if(!state) state=example();
+if(state.cur&&state.cur.bids) state.cur.bids=state.cur.bids.map(v=>v==null?0:v);
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function commit(fn){hist.push(JSON.stringify(state)); if(hist.length>80) hist.shift(); fn(); save(); render();}
+
+const plan=()=>seq(state.maxCards);
+const n=()=>state.players.length;
+const dealerOf=i=>(state.firstDealer+i)%n();
+const finished=()=>state.rounds.length>=plan().length;
+function totals(){
+  const t=state.players.map(()=>0), hits=state.players.map(()=>0), run=[];
+  state.rounds.forEach(r=>{ r.bids.forEach((b,i)=>{const p=points(b,r.tricks[i]); t[i]+=p; if(b===r.tricks[i]) hits[i]++;}); run.push(t.slice()); });
+  return {t,hits,run};
+}
+
+/* ---------- render ---------- */
+function stepper(val,min,max,onchange,label,sm){
+  const out=el('output',{class:val==null?'unset':null},val==null?'–':String(val));
+  return el('div',{class:'step'+(sm?' sm':'')},
+    el('button',{type:'button','aria-label':label+' min één',disabled:val==null||val<=min,onclick:()=>onchange(Math.max(min,(val??min)-1))},'−'),
+    out,
+    el('button',{type:'button','aria-label':label+' plus één',disabled:val!=null&&val>=max,onclick:()=>onchange(val==null?min:Math.min(max,val+1))},'+'));
+}
+
+function renderRound(){
+  const box=$('round'); box.replaceChildren();
+  const P=plan(), ri=state.rounds.length;
+  if(finished()){
+    const {t}=totals(); const top=Math.max(...t); const w=state.players.filter((p,i)=>t[i]===top).map(p=>p.name);
+    box.className='card done';
+    box.append(el('h2',{style:'margin:0;font:700 22px var(--display)'},'Spel afgelopen'),
+      el('div',{class:'winner'},(w.length>1?'Gelijkspel tussen '+w.join(' en '):w[0]+' wint')+' met '+top+' punten.'),
+      el('div',{class:'ractions'},el('span',{class:'note'},'Het spel staat in het overzicht onderaan.'),el('button',{class:'btn primary',type:'button',onclick:openNew},'Nieuw spel')));
+    return;
+  }
+  box.className='card round';
+  const cards=P[ri], cur=state.cur, d=dealerOf(ri);
+  const bidSum=sum(cur.bids), allBids=cur.bids.every(v=>v!=null);
+  const head=el('div',{class:'rhead'},el('h2',null,'Ronde '+(ri+1),el('span',null,'van '+P.length)),
+    el('div',{class:'meta'},el('span',{class:'chip acc'},cards+(cards===1?' kaart':' kaarten')),el('span',{class:'chip'},'Deler: '+state.players[d].name)));
+  box.append(head);
+
+  if(cur.stage==='bid'){
+    let chip=null;
+    if(allBids){ const diff=bidSum-cards; chip=diff===0?el('span',{class:'chip acc'},'Samen '+bidSum+' voorspeld · precies'):diff<0?el('span',{class:'chip warn'},'Samen '+bidSum+' voorspeld · '+(-diff)+' te weinig'):el('span',{class:'chip neg'},'Samen '+bidSum+' voorspeld · '+diff+' te veel'); }
+    box.append(el('p',{class:'stage'},'Stap 1 · Voorspellingen'));
+    const list=el('div',{class:'plist'});
+    state.players.forEach((p,i)=>list.append(el('div',{class:'prow'},
+      el('div',{class:'who'},el('b',null,p.name,i===d?el('span',{class:'dealer'},'deelt'):null),el('small',null,'Hoeveel slagen?')),
+      stepper(cur.bids[i],0,cards,v=>commit(()=>{state.cur.bids[i]=v;}),p.name+' voorspelling'))));
+    box.append(list);
+    box.append(el('div',{class:'ractions'},chip||el('span',{class:'note'},'Iedereen zegt tegelijk zijn aantal. Vul ze daarna hier in.'),
+      el('button',{class:'btn primary big',type:'button',disabled:!allBids,onclick:()=>commit(()=>{state.cur.stage='tricks'; state.cur.tricks=state.cur.bids.slice();})},'Spelen ›')));
+  } else {
+    const trSum=sum(cur.tricks), allTr=cur.tricks.every(v=>v!=null);
+    const diff=bidSum-cards;
+    box.append(el('p',{class:'stage'},'Stap 2 · Gehaalde slagen'));
+    box.append(el('div',{class:'meta'},diff===0?el('span',{class:'chip acc'},'Voorspeld: '+bidSum+' · precies'):diff<0?el('span',{class:'chip warn'},'Voorspeld: '+bidSum+' · '+(-diff)+' te weinig'):el('span',{class:'chip neg'},'Voorspeld: '+bidSum+' · '+diff+' te veel')));
+    const list=el('div',{class:'plist'});
+    state.players.forEach((p,i)=>{
+      const b=cur.bids[i], t=cur.tricks[i];
+      const pt=t==null?null:points(b,t);
+      list.append(el('div',{class:'prow'},
+        el('div',{class:'who'},el('b',null,p.name),el('small',null,'Voorspeld '+b, pt==null?'':' · ',pt==null?null:el('span',{class:'pts '+(pt>0?'pos':'neg')},(pt>0?'+':'−')+Math.abs(pt)))),
+        stepper(t,0,cards,v=>commit(()=>{state.cur.tricks[i]=v;}),p.name+' slagen')));
+    });
+    box.append(list);
+    let msg;
+    if(!allTr) msg=el('span',{class:'note'},'Samen '+trSum+' van '+cards+' slagen ingevuld.');
+    else if(trSum<cards) msg=el('span',{class:'chip warn'},'Nog '+(cards-trSum)+(cards-trSum===1?' slag':' slagen')+' te verdelen');
+    else if(trSum>cards) msg=el('span',{class:'chip neg'},(trSum-cards)+(trSum-cards===1?' slag':' slagen')+' te veel ingevuld');
+    else msg=el('span',{class:'chip acc'},'Alle '+cards+' slagen verdeeld');
+    box.append(el('div',{class:'ractions'},
+      el('button',{class:'linkbtn',type:'button',onclick:()=>commit(()=>{state.cur.stage='bid';})},'‹ Voorspellingen wijzigen'),
+      el('button',{class:'btn primary big',type:'button',disabled:!(allTr&&trSum===cards),onclick:closeRound},'Ronde afsluiten')));
+    box.insertBefore(msg,box.lastChild);
+  }
+}
+
+function closeRound(){
+  const cards=plan()[state.rounds.length];
+  commit(()=>{ state.rounds.push({cards,bids:state.cur.bids.slice(),tricks:state.cur.tricks.slice()}); const k=n(); state.cur={stage:'bid',bids:Array(k).fill(0),tricks:Array(k).fill(null)}; });
+  if(finished()&&!state.example) recordGame(true);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderScore(){
+  const t=$('score'); t.replaceChildren();
+  const P=plan(), {run}=totals(), ri=state.rounds.length, peak=state.maxCards;
+  t.append(el('thead',null,el('tr',null,el('th',{class:'rc',scope:'col'},'Ronde'),state.players.map(p=>el('th',{scope:'col',title:p.name},p.name)))));
+  const tb=el('tbody');
+  P.forEach((cards,r)=>{
+    const done=r<ri, now=r===ri;
+    const label=el('th',{class:'rc',scope:'row'},el('b',null,cards+(cards===1?' kaart':' kaarten')),el('small',null,'Ronde '+(r+1)+' · deler '+state.players[dealerOf(r)].name));
+    const tr=el('tr',{class:(done?'':'future')+(now?' now':'')+(cards===peak&&P.indexOf(peak)===r?' peak':'')},label);
+    state.players.forEach((p,i)=>{
+      if(done){
+        const R=state.rounds[r], b=R.bids[i], tk=R.tricks[i], pt=points(b,tk);
+        tr.append(el('td',null,el('button',{type:'button',class:'cellbtn',onclick:()=>openEdit(r),'aria-label':p.name+', ronde '+(r+1)+': voorspeld '+b+', gehaald '+tk+', '+pt+' punten, totaal '+run[r][i]},
+          el('span',{class:'tot'},String(run[r][i])),
+          el('span',{class:'det'},b+'/'+tk+' ',el('span',{class:pt>0?'pos':'neg'},(pt>0?'+':'−')+Math.abs(pt))))));
+      } else if(now){
+        const b=state.cur.bids[i];
+        tr.append(el('td',null,el('div',{class:'cellbtn',style:'cursor:default'},el('span',{class:'tot'},b==null?'…':String(b)),el('span',{class:'det'},'voorspeld'))));
+      } else tr.append(el('td',null,''));
+    });
+    tb.append(tr);
+  });
+  t.append(tb);
+}
+
+function renderStandings(){
+  const st=$('standings'); const {t,hits}=totals();
+  st.replaceChildren(el('h2',null,finished()?'Eindstand':'Tussenstand'));
+  const order=state.players.map((p,i)=>({p,s:t[i],h:hits[i]})).sort((a,b)=>b.s-a.s);
+  const max=Math.max(1,...order.map(o=>Math.max(0,o.s)));
+  let rank=0,prev=null;
+  order.forEach((o,idx)=>{ if(o.s!==prev){rank=idx+1; prev=o.s;}
+    st.append(el('div',{class:'row'+(rank===1&&state.rounds.length?' first':'')},el('span',{class:'rank'},String(rank)),
+      el('div',null,el('div',{class:'nm'},o.p.name,el('small',null,o.h+' van '+state.rounds.length+' goed')),el('div',{class:'bar'},el('i',{style:'width:'+(Math.max(0,o.s)/max*100)+'%'}))),
+      el('span',{class:'score-n'},String(o.s))));});
+}
+
+function render(){
+  $('banner').hidden=!state.example;
+  $('undo').disabled=!hist.length;
+  renderRound(); renderScore(); renderStandings();
+}
+
+/* ---------- sheets ---------- */
+let lastFocus=null;
+function openSheet(nodes){lastFocus=document.activeElement; $('sheet').replaceChildren(...nodes); $('overlay').hidden=false; const f=$('sheet').querySelector('input,select,button'); if(f) f.focus();}
+function closeSheet(){$('overlay').hidden=true; if(lastFocus&&document.contains(lastFocus)) lastFocus.focus();}
+$('overlay').addEventListener('click',e=>{if(e.target.id==='overlay') closeSheet();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('overlay').hidden) closeSheet();});
+const cancelBtn=()=>el('button',{class:'btn',type:'button',onclick:closeSheet},'Annuleren');
+
+function openEdit(r){
+  const R=state.rounds[r], cards=R.cards, bids=R.bids.slice(), tricks=R.tricks.slice();
+  const body=el('div');
+  const err=el('p',{class:'err'});
+  const draw=()=>{
+    body.replaceChildren(el('div',{class:'edit-head'},el('span',null,'Speler'),el('span',null,'Voorspeld'),el('span',null,'Gehaald')),
+      state.players.map((p,i)=>el('div',{class:'edit-row'},el('b',null,p.name),
+        stepper(bids[i],0,cards,v=>{bids[i]=v;draw();},p.name+' voorspelling',true),
+        stepper(tricks[i],0,cards,v=>{tricks[i]=v;draw();},p.name+' slagen',true))));
+    const s=sum(tricks); err.textContent=s===cards?'':'Samen '+s+' slagen, maar er zijn er '+cards+'.';
+    saveBtn.disabled=s!==cards;
+  };
+  const saveBtn=el('button',{class:'btn primary',type:'button',onclick:()=>{commit(()=>{state.rounds[r]={cards,bids:bids.slice(),tricks:tricks.slice()};}); closeSheet(); if(finished()&&!state.example) recordGame(true);}},'Opslaan');
+  draw();
+  openSheet([el('h3',null,'Ronde '+(r+1)+' verbeteren'),el('p',null,cards+(cards===1?' kaart':' kaarten')+' · deler '+state.players[dealerOf(r)].name),body,err,
+    el('div',{class:'actions'},el('div',{class:'right'},cancelBtn(),saveBtn))]);
+}
+
+function openNew(){
+  let names=state.example?['','','','']:state.players.map(p=>p.name);
+  while(names.length<3) names.push('');
+  let first=0, maxSel=null, maxFor=0;
+  const inProgress=!state.example&&!finished()&&state.rounds.length>0;
+  const wrap=el('div',{class:'names'});
+  const maxBox=el('div'), firstBox=el('div');
+  const draw=()=>{
+    wrap.replaceChildren(...names.map((nm,i)=>{
+      const inp=el('input',{type:'text',id:'pname-'+i,maxlength:'20',placeholder:'Speler '+(i+1),value:nm,autocomplete:'off','aria-label':'Naam speler '+(i+1)});
+      inp.addEventListener('input',()=>{names[i]=inp.value; drawFirst();});
+      return el('div',{class:'nrow'},el('span',null,String(i+1)),inp,el('button',{type:'button','aria-label':'Speler '+(i+1)+' verwijderen',disabled:names.length<=3,onclick:()=>{names.splice(i,1); if(first>=names.length) first=0; draw();}},'×'));
+    }), names.length<8?el('button',{class:'btn',type:'button',onclick:()=>{names.push(''); draw(); const l=$('pname-'+(names.length-1)); if(l) l.focus();}},'+ Speler toevoegen'):null);
+    const k=names.length, m=maxAllowed(k); const opts=[]; for(let c=m;c>=1;c-=2) opts.push(c);
+    if(maxFor!==k){maxSel=m; maxFor=k;}
+    const sel=el('select',{id:'max-cards'},opts.map(c=>el('option',{value:String(c),selected:c===maxSel},c+' kaarten'+(c===m?' (standaard)':''))));
+    sel.addEventListener('change',()=>{maxSel=+sel.value; info.textContent=roundsInfo();});
+    maxBox.replaceChildren(el('label',{class:'field',for:'max-cards'},'Maximaal aantal kaarten',sel));
+    info.textContent=roundsInfo();
+    drawFirst();
+  };
+  const drawFirst=()=>{
+    const sel=el('select',{id:'first-dealer'},names.map((nm,i)=>el('option',{value:String(i),selected:i===first},nm.trim()||'Speler '+(i+1))));
+    sel.addEventListener('change',()=>{first=+sel.value;});
+    firstBox.replaceChildren(el('label',{class:'field',for:'first-dealer'},'Eerste deler',sel));
+  };
+  const info=el('p');
+  const roundsInfo=()=>{const s=seq(maxSel||1); return s.length+' rondes: '+s.join(' · ');};
+  const start=(keep)=>{
+    const nm=names.map((x,i)=>x.trim()||'Speler '+(i+1));
+    if(keep) recordGame(false);
+    commit(()=>{state=newGame(nm,maxSel,first);}); closeSheet();
+  };
+  draw();
+  openSheet([el('h3',null,'Nieuw spel'),
+    state.example?el('p',null,'Het voorbeeldspel wordt gewist.'):el('p',null,'Het huidige spel wordt gewist. Met Ongedaan kun je dat terugdraaien.'),
+    el('div',{class:'field'},'Spelers',wrap),
+    el('div',{class:'two'},maxBox,firstBox), info,
+    el('div',{class:'actions'},
+      inProgress?el('button',{class:'btn',type:'button',onclick:()=>start(true)},'Tussenstand bewaren en starten'):null,
+      el('div',{class:'right'},cancelBtn(),el('button',{class:'btn primary',type:'button',onclick:()=>start(false)},'Start')))]);
+}
+
+$('undo').addEventListener('click',()=>{ if(!hist.length) return; state=JSON.parse(hist.pop()); save(); render(); });
+$('new').addEventListener('click',openNew);
+$('banner-new').addEventListener('click',openNew);
+
+/* ---------- overzicht van gespeelde spellen ---------- */
+let db=null, games=null, histMsg='', resetArmed=false, delArmed=null;
+const dbReady=(async()=>{
+  try{ if(window.claude&&window.claude.use) db=await window.claude.use('db'); }catch(e){ db=null; }
+  if(db){
+    db.collection('games').onSnapshot(snap=>{games=snap.docs.map(d=>Object.assign({id:d.id},d.data())); renderHist();},
+      ()=>{histMsg='Het overzicht kon niet worden geladen. Laad de pagina opnieuw.'; renderHist();});
+  } else {
+    try{games=JSON.parse(localStorage.getItem(HKEY)||'[]');}catch(e){games=[];}
+    renderHist();
+  }
+})();
+function localSave(){try{localStorage.setItem(HKEY,JSON.stringify(games));}catch(e){}}
+
+async function recordGame(complete){
+  if(!state.gameId||!state.rounds.length) return;
+  const {t,hits}=totals();
+  const rec={finishedAt:Date.now(),complete:!!complete,rounds:state.rounds.length,players:state.players.map((p,i)=>({name:p.name,total:t[i],hits:hits[i]}))};
+  const id=state.gameId;
+  await dbReady;
+  if(db){
+    const old=(games||[]).find(g=>g.id===id);
+    if(old&&JSON.stringify(old.players)===JSON.stringify(rec.players)&&old.complete===rec.complete) return;
+    try{await db.doc('games/'+id).set(rec);}
+    catch(e){histMsg=e&&e.code==='quota_exceeded'?'Het overzicht is vol. Verwijder oude spellen of reset het overzicht.':'Dit spel kon niet worden bewaard. Probeer het later opnieuw.'; renderHist();}
+  } else {
+    games=(games||[]).filter(g=>g.id!==id); games.push(Object.assign({id},rec)); localSave(); renderHist();
+  }
+}
+async function deleteGame(id){
+  if(db){ try{await db.doc('games/'+id).delete();}catch(e){histMsg='Verwijderen is niet gelukt. Probeer het opnieuw.'; renderHist();} }
+  else { games=games.filter(g=>g.id!==id); localSave(); renderHist(); }
+}
+async function resetAll(){
+  const ids=(games||[]).map(g=>g.id);
+  if(db){ for(const id of ids){ try{await db.doc('games/'+id).delete();}catch(e){histMsg='Niet alle spellen zijn gewist. Probeer het opnieuw.';} } renderHist(); }
+  else { games=[]; localSave(); renderHist(); }
+}
+
+function renderHist(){
+  const h=$('hist'); h.replaceChildren();
+  const list=(games||[]).slice().sort((a,b)=>(b.finishedAt||0)-(a.finishedAt||0));
+  const resetBtn=list.length?el('button',{class:'btn',style:resetArmed?'color:var(--neg);border-color:var(--neg)':null,type:'button',onclick:()=>{ if(!resetArmed){resetArmed=true; renderHist(); setTimeout(()=>{resetArmed=false; renderHist();},5000); return;} resetArmed=false; resetAll(); }},resetArmed?'Tik nogmaals om alles te wissen':'Overzicht resetten'):null;
+  h.append(el('div',{class:'hist-head'},el('h2',{id:'hist-title'},'Gespeelde spellen'),resetBtn));
+  if(histMsg) h.append(el('p',{class:'note',style:'color:var(--neg)'},histMsg));
+  if(games==null){h.append(el('p',{class:'note'},'Overzicht laden…')); return;}
+  if(!list.length){h.append(el('p',{class:'note'},'Nog geen spellen. Zodra een spel is uitgespeeld, verschijnt het hier met de eindscores.')); return;}
+
+  const stats={};
+  list.forEach(g=>{
+    const top=Math.max(...g.players.map(p=>p.total));
+    g.players.forEach(p=>{const k=p.name.trim().toLowerCase(); const s=stats[k]||(stats[k]={name:p.name.trim(),n:0,w:0,best:-Infinity,sum:0,hits:0,rounds:0});
+      s.n++; s.sum+=p.total; s.best=Math.max(s.best,p.total); s.hits+=p.hits||0; s.rounds+=g.rounds||0; if(g.complete&&p.total===top&&g.players.length>1) s.w++;});
+  });
+  const rows=Object.values(stats).sort((a,b)=>b.w-a.w||b.sum/b.n-a.sum/a.n);
+  h.append(el('h3',null,'Per speler'),
+    el('div',{class:'scroll'},el('table',{class:'stats'},
+      el('thead',null,el('tr',null,['Speler','Gespeeld','Gewonnen','Totaal','Gemiddeld','Hoogste','Goed voorspeld'].map(x=>el('th',{scope:'col'},x)))),
+      el('tbody',null,rows.map(r=>el('tr',null,el('td',null,r.name),el('td',null,String(r.n)),el('td',null,String(r.w)),el('td',{style:'font-weight:700'},String(r.sum)),el('td',null,String(Math.round(r.sum/r.n))),el('td',null,String(r.best)),el('td',null,r.rounds?Math.round(r.hits/r.rounds*100)+'%':'–')))))));
+
+  const fmt=ts=>{try{return new Date(ts).toLocaleString('nl-NL',{weekday:'short',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}};
+  h.append(el('h3',null,'Alle spellen ('+list.length+')'),
+    el('ul',{class:'games'},list.map(g=>{
+      const top=Math.max(...g.players.map(p=>p.total)); const armed=delArmed===g.id;
+      return el('li',{class:'game'},
+        el('span',{class:'when'},fmt(g.finishedAt),g.complete?null:el('em',null,'niet uitgespeeld')),
+        el('button',{class:'linkbtn'+(armed?' armed':''),type:'button',onclick:()=>{ if(!armed){delArmed=g.id; renderHist(); return;} delArmed=null; deleteGame(g.id);}},armed?'Zeker weten?':'Verwijderen'),
+        el('div',{class:'res'},g.players.slice().sort((a,b)=>b.total-a.total).map(p=>el('span',{class:p.total===top&&g.players.length>1?'win':null},p.name+' ',el('b',null,String(p.total))))));
+    })));
+}
+renderHist();
+render();
+})();
+</script>
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+</script>
+</body>
+</html>
